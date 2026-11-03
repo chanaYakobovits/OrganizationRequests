@@ -12,7 +12,7 @@ namespace Repositories.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 
-            migrationBuilder.Sql("DROP INDEX IF EXISTS IX_Requests_CreatedAt_Id ON Requests;"); migrationBuilder.CreateTable(
+             migrationBuilder.CreateTable(
                 name: "Requests",
                 columns: table => new
                 {

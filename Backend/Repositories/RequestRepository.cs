@@ -21,18 +21,17 @@ public class RequestRepository : IRequestRepository
         if (q.AssignedTo != null) query = query.Where(r => r.AssignedTo == q.AssignedTo);
         if (q.CreatedFrom.HasValue) query = query.Where(r => r.CreatedAt >= q.CreatedFrom);
         if (q.CreatedTo.HasValue) query = query.Where(r => r.CreatedAt <= q.CreatedTo);
+        if (!string.IsNullOrWhiteSpace(q.Search))
+        {
+            var s = q.Search.Trim();
+            query = query.Where(r => r.Title.StartsWith(s) || r.OrganizationName.StartsWith(s));
+        }
 
-        
         var total = await query.CountAsync(ct);
 
        
         query = ApplySorting(query, q.SortBy, q.SortDir);
 
-
-        var sql = query
-            .Skip((q.Page - 1) * q.PageSize)
-            .Take(q.PageSize)
-            .ToQueryString();
 
         var items = await query
             .Skip((q.Page - 1) * q.PageSize)

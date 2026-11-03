@@ -20,6 +20,8 @@ namespace Repositories
             b.HasIndex(x => new { x.CreatedAt, x.Id })
              .IsDescending(true, false)
              .HasDatabaseName("IX_Requests_CreatedAt_Id");
+            b.HasIndex(x => new { x.Status, x.CreatedAt }).IsDescending(false, true);
+            b.HasIndex(x => new { x.AssignedTo, x.CreatedAt }).IsDescending(false, true);
         }
     }
 

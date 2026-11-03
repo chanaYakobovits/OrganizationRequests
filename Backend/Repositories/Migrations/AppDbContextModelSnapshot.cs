@@ -10,7 +10,6 @@ using Repositories;
 
 namespace Repositories.Migrations
 {
-
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
     {
@@ -64,6 +63,16 @@ namespace Repositories.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AssignedTo", "CreatedAt")
+                        .IsDescending(false, true);
+
+                    b.HasIndex("CreatedAt", "Id")
+                        .IsDescending(true, false)
+                        .HasDatabaseName("IX_Requests_CreatedAt_Id");
+
+                    b.HasIndex("Status", "CreatedAt")
+                        .IsDescending(false, true);
 
                     b.ToTable("Requests");
                 });

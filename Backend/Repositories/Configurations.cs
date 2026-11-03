@@ -17,6 +17,9 @@ namespace Repositories
             b.Property(x => x.OrganizationName).HasMaxLength(200).IsRequired();
             b.Property(x => x.AssignedTo).HasMaxLength(100);
             b.Property(x => x.RowVersion).IsRowVersion();
+            b.HasIndex(x => new { x.CreatedAt, x.Id })
+             .IsDescending(true, false)
+             .HasDatabaseName("IX_Requests_CreatedAt_Id");
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Repositories;
 
@@ -9,6 +10,10 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(o => o.UseSqlServer(connectionString));
         services.AddScoped<DbSeeder>();
+        services.AddScoped<IRequestRepository, RequestRepository>();
+        services.AddDbContext<AppDbContext>(o => o
+    .UseSqlServer(connectionString)
+    .LogTo(Console.WriteLine, LogLevel.Information));
         return services;
     }
 }

@@ -11,7 +11,8 @@ namespace Repositories.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
+
+            migrationBuilder.Sql("DROP INDEX IF EXISTS IX_Requests_CreatedAt_Id ON Requests;"); migrationBuilder.CreateTable(
                 name: "Requests",
                 columns: table => new
                 {

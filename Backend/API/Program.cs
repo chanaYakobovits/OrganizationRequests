@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Repositories;
+using Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,10 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddJsonOptions(o => o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-
-
 builder.Services.AddRepositories(
     builder.Configuration.GetConnectionString("DefaultConnection")!);
+builder.Services.AddServices();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

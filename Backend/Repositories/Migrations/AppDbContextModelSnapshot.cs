@@ -10,6 +10,7 @@ using Repositories;
 
 namespace Repositories.Migrations
 {
+
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
     {

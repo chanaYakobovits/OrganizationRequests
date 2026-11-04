@@ -20,6 +20,41 @@
       <option [value]="p" [selected]="store.query().priority === p">{{ p }}</option>
     }
   </select>
+<input
+  #org
+  type="search"
+  placeholder="שם ארגון..."
+  [value]="store.query().organizationName ?? ''"
+  (input)="store.setOrganization(org.value)"
+/>
 
+<select #asg (change)="onAssignee(asg.value)">
+  <option value="" [selected]="!store.query().assignedTo">כל המטפלים</option>
+  @for (a of assignees(); track a) {
+    <option [value]="a" [selected]="store.query().assignedTo === a">{{ a }}</option>
+  }
+</select>
+
+<label>
+  מתאריך
+  <input
+    #from
+    type="date"
+    [value]="store.query().createdFrom ?? ''"
+    [max]="store.query().createdTo ?? ''"
+    (change)="onCreatedFrom(from.value)"
+  />
+</label>
+
+<label>
+  עד תאריך
+  <input
+    #to
+    type="date"
+    [value]="store.query().createdTo ?? ''"
+    [min]="store.query().createdFrom ?? ''"
+    (change)="onCreatedTo(to.value)"
+  />
+</label>
   <button (click)="store.clearFilters()">נקה</button>
 </div>

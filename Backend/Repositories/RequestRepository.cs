@@ -25,8 +25,13 @@ public class RequestRepository : IRequestRepository
         
         if (q.Status.HasValue) query = query.Where(r => r.Status == q.Status);
         if (q.Priority.HasValue) query = query.Where(r => r.Priority == q.Priority);
-        if (q.OrganizationName != null) query = query.Where(r => r.OrganizationName == q.OrganizationName);
-        if (q.AssignedTo != null) query = query.Where(r => r.AssignedTo == q.AssignedTo);
+        if (!string.IsNullOrWhiteSpace(q.OrganizationName))
+        {
+            var org = q.OrganizationName.Trim();
+            query = query.Where(r => r.OrganizationName.StartsWith(org));
+        }
+        if (!string.IsNullOrWhiteSpace(q.AssignedTo))
+            query = query.Where(r => r.AssignedTo == q.AssignedTo);
         if (q.CreatedFrom.HasValue) query = query.Where(r => r.CreatedAt >= q.CreatedFrom);
         if (q.CreatedTo.HasValue)
         {
@@ -172,4 +177,13 @@ public class RequestRepository : IRequestRepository
 
         return new RequestSummaryDto(byStatus.Sum(x => x.Count), byStatus, byPriority);
     }
+
+    public async Task<IReadOnlyList<string>> GetAssigneesAsync(CancellationToken ct)
+    => await _db.Requests
+        .AsNoTracking()
+        .Where(r => r.AssignedTo != null)
+        .Select(r => r.AssignedTo!)
+        .Distinct()
+        .OrderBy(a => a)
+        .ToListAsync(ct);
 }

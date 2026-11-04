@@ -76,5 +76,7 @@ namespace Services.Services
 
         public Task<RequestSummaryDto> GetSummaryAsync(CancellationToken ct)
             => _summaryCache.GetOrCreateAsync(_repo.GetSummaryAsync, ct);
+        public Task<IReadOnlyList<string>> GetAssigneesAsync(CancellationToken ct)
+                => _repo.GetAssigneesAsync(ct);
     }
 }

@@ -84,4 +84,13 @@ public class SearchTests
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
+
+    [Fact]
+    public async Task Filter_OrganizationName_MatchesByPrefix()
+    {
+        var result = await GetAsync("organizationName=Beta");
+
+        Assert.Equal(1, result.TotalCount);
+        Assert.All(result.Items, r => Assert.StartsWith("Beta", r.OrganizationName));
+    }
 }

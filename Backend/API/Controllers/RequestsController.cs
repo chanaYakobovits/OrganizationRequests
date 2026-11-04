@@ -55,5 +55,9 @@ namespace API.Controllers
         [HttpGet("summary")]
         public async Task<ActionResult<RequestSummaryDto>> GetSummary(CancellationToken ct)
             => Ok(await _service.GetSummaryAsync(ct));
+
+        [HttpGet("assignees")]
+        public async Task<ActionResult<IReadOnlyList<string>>> GetAssignees(CancellationToken ct)
+                => Ok(await _service.GetAssigneesAsync(ct));
     }
 }

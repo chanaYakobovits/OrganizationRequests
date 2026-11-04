@@ -1,6 +1,6 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { Subject, catchError, debounceTime, distinctUntilChanged, filter, map, of, switchMap, tap } from 'rxjs';
+import { Subject, catchError, debounceTime, filter, map, of, switchMap, tap } from 'rxjs';
 import { getErrorMessage, getErrorStatus } from '../core/http-error';
 import {PagedResult,RequestDto,RequestQuery,RequestSortField,} from '../models/request.models';
 import { RequestsApiService } from './requests-api.service';
@@ -50,17 +50,17 @@ export class RequestsStore {
   );
 
   private readonly searchInput$ = new Subject<string>();
-
+  private readonly orgInput$ = this.createTextFilter('organizationName');
+  
   readonly updatingId = signal<number | null>(null);
   readonly actionMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
-
+  
   constructor() {
     
     this.searchInput$
       .pipe(
         debounceTime(300),
         map((text) => text.trim()),
-        // distinctUntilChanged(),
         filter((s) => s !== (this._query().search ?? '')),
         takeUntilDestroyed(),
       )
@@ -133,6 +133,10 @@ dismissMessage(): void {
   setSearch(text: string): void {
     this.searchInput$.next(text);
   }
+setOrganization(text: string): void {
+  this.orgInput$.next(text);
+}
+
 
   setFilters(filters: FilterFields): void {
     this.patchQuery({ ...filters, page: 1 });
@@ -163,4 +167,17 @@ dismissMessage(): void {
   private patchQuery(patch: Partial<RequestQuery>): void {
     this._query.update((q) => ({ ...q, ...patch }));
   }
+
+  private createTextFilter(key: 'organizationName' | 'assignedTo'): Subject<string> {
+  const input$ = new Subject<string>();
+  input$
+    .pipe(
+      debounceTime(300),
+      map((text) => text.trim()),
+      filter((v) => v !== (this._query()[key] ?? '')),
+      takeUntilDestroyed(),
+    )
+    .subscribe((v) => this.patchQuery({ [key]: v || undefined, page: 1 }));
+  return input$;
+}
 }

@@ -15,5 +15,6 @@ namespace Services.IServices
         Task<IReadOnlyList<RequestStatusHistoryDto>?> GetHistoryAsync(int id, CancellationToken ct);
         Task<BulkUpdateResult> BulkUpdateStatusAsync(BulkUpdateStatusRequest request, CancellationToken ct);
         Task<RequestSummaryDto> GetSummaryAsync(CancellationToken ct);
+        Task<IReadOnlyList<string>> GetAssigneesAsync(CancellationToken ct);
     }
 }

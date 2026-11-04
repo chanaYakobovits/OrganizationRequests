@@ -32,6 +32,9 @@ export class RequestsApiService {
     return this.http.post<BulkUpdateResult>(`${this.baseUrl}/bulk-status`, body);
   }
 
+  getAssignees(): Observable<string[]> {
+  return this.http.get<string[]>(`${this.baseUrl}/assignees`);
+}
 
   private toHttpParams(query: RequestQuery): HttpParams {
     const params: Record<string, string> = {};
@@ -42,4 +45,5 @@ export class RequestsApiService {
     }
     return new HttpParams({ fromObject: params });
   }
+
 }

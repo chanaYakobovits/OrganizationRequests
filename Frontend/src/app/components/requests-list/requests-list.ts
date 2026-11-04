@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RequestsStore } from '../../services/requests.store';
 import { HistoryStore } from '../../services/history.store';
 import {ALLOWED_TRANSITIONS,RequestDto,RequestSortField,RequestStatus,} from '../../models/request.models';
-import { RequestHistory } from '../request-history/request-history';
+
 
 @Component({
   selector: 'app-requests-list',

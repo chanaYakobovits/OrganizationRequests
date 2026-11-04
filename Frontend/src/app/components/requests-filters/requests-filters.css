@@ -1,2 +1,3 @@
-.bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
-input { min-width: 260px; }
+
+.bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+input[type="search"] { min-width: 180px; }

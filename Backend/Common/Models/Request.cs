@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Common.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,5 +18,7 @@ namespace Common.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public byte[] RowVersion { get; set; } = null!;
+
+        
     }
 }

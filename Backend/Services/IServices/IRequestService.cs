@@ -10,5 +10,8 @@ namespace Services.IServices
     public interface IRequestService
     {
         Task<PagedResult<RequestDto>> GetPagedAsync(RequestQuery query, CancellationToken ct);
+
+        Task<UpdateStatusResult> UpdateStatusAsync(int id, UpdateStatusRequest request, CancellationToken ct);
+        Task<IReadOnlyList<RequestStatusHistoryDto>?> GetHistoryAsync(int id, CancellationToken ct);
     }
 }

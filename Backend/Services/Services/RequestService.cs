@@ -21,5 +21,16 @@ namespace Services.Services
             return new PagedResult<RequestDto>(
                 items.Select(r => r.ToDto()).ToList(), query.Page, query.PageSize, total);
         }
+
+        public Task<UpdateStatusResult> UpdateStatusAsync(int id, UpdateStatusRequest request, CancellationToken ct)
+        {
+            
+            if (!request.TryGetRowVersion(out var rowVersion))
+                throw new ArgumentException("Version is not a valid row version.", nameof(request));
+
+            return _repo.UpdateStatusAsync(id, request.NewStatus, rowVersion, request.ChangedBy, ct);
+        }
+        public Task<IReadOnlyList<RequestStatusHistoryDto>?> GetHistoryAsync(int id, CancellationToken ct)
+            => _repo.GetHistoryAsync(id, ct);
     }
 }

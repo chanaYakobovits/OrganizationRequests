@@ -1,14 +1,21 @@
-﻿using Common.DTOs;
+﻿using Common;
+using Common.DTOs;
 using Common.Models;
 using Microsoft.EntityFrameworkCore;
-using Common;
+using Microsoft.Extensions.Logging;
 
 namespace Repositories;
 
 public class RequestRepository : IRequestRepository
 {
     private readonly AppDbContext _db;
-    public RequestRepository(AppDbContext db) => _db = db;
+    private readonly ILogger<RequestRepository> _logger;
+
+    public RequestRepository(AppDbContext db, ILogger<RequestRepository> logger)
+    {
+        _db = db;
+        _logger = logger;
+    }
 
     public async Task<(IReadOnlyList<Request> Items, int TotalCount)> GetPagedAsync(
         RequestQuery q, CancellationToken ct)
@@ -21,7 +28,19 @@ public class RequestRepository : IRequestRepository
         if (q.OrganizationName != null) query = query.Where(r => r.OrganizationName == q.OrganizationName);
         if (q.AssignedTo != null) query = query.Where(r => r.AssignedTo == q.AssignedTo);
         if (q.CreatedFrom.HasValue) query = query.Where(r => r.CreatedAt >= q.CreatedFrom);
-        if (q.CreatedTo.HasValue) query = query.Where(r => r.CreatedAt <= q.CreatedTo);
+        if (q.CreatedTo.HasValue)
+        {
+            var to = q.CreatedTo.Value;
+            if (to.TimeOfDay == TimeSpan.Zero)
+            {
+                var endExclusive = to.AddDays(1);
+                query = query.Where(r => r.CreatedAt < endExclusive);
+            }
+            else
+            {
+                query = query.Where(r => r.CreatedAt <= to);
+            }
+        }
         if (!string.IsNullOrWhiteSpace(q.Search))
         {
             var s = q.Search.Trim();
@@ -60,16 +79,17 @@ public class RequestRepository : IRequestRepository
     public async Task<UpdateStatusResult> UpdateStatusAsync(
     int id, RequestStatus newStatus, byte[] expectedVersion, string changedBy, CancellationToken ct)
     {
-        
+
         var request = await _db.Requests.FirstOrDefaultAsync(r => r.Id == id, ct);
         if (request is null)
             return new(UpdateOutcome.NotFound, Error: $"Request {id} was not found.");
 
-        
-        if (!request.RowVersion.SequenceEqual(expectedVersion))
+
+        if (!request.RowVersion.SequenceEqual(expectedVersion)) {
+            _logger.LogWarning("Concurrency conflict (stale version) on request {Id}", id);
             return new(UpdateOutcome.Conflict,
                 Error: "The request was modified by someone else. Reload and try again.");
-
+}
        
         if (!RequestStatusTransitions.CanTransition(request.Status, newStatus))
         {
@@ -102,13 +122,13 @@ public class RequestRepository : IRequestRepository
         catch (DbUpdateConcurrencyException)
         {   
             _db.ChangeTracker.Clear();
-
+            _logger.LogWarning("Concurrency conflict (DB level) on request {Id}", id);
             return new(UpdateOutcome.Conflict,
                 Error: "The request was modified by someone else. Reload and try again.");
           
         }
 
-        
+        _logger.LogInformation("Request {Id} status changed {Previous} -> {New} by {ChangedBy}",id, previous, newStatus, changedBy);
         return new(UpdateOutcome.Success, request.ToDto());
     }
     public async Task<IReadOnlyList<RequestStatusHistoryDto>?> GetHistoryAsync(int id, CancellationToken ct)

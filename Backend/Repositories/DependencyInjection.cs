@@ -8,12 +8,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddRepositories(this IServiceCollection services, string connectionString)
     {
+       
         services.AddDbContext<AppDbContext>(o => o.UseSqlServer(connectionString));
         services.AddScoped<DbSeeder>();
         services.AddScoped<IRequestRepository, RequestRepository>();
-        services.AddDbContext<AppDbContext>(o => o
-    .UseSqlServer(connectionString)
-    .LogTo(Console.WriteLine, LogLevel.Information));
         return services;
     }
 }

@@ -64,6 +64,10 @@ namespace Repositories.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrganizationName");
+
+                    b.HasIndex("Title");
+
                     b.HasIndex("AssignedTo", "CreatedAt")
                         .IsDescending(false, true);
 

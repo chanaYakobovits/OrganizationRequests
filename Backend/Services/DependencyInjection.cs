@@ -13,6 +13,8 @@ namespace Services
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            services.AddMemoryCache();
+            services.AddSingleton<ISummaryCache, SummaryCache>();
             services.AddScoped<IRequestService, RequestService>();
             return services;
         }

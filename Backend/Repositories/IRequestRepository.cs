@@ -11,4 +11,5 @@ public interface IRequestRepository
     Task<UpdateStatusResult> UpdateStatusAsync(
         int id, RequestStatus newStatus, byte[] expectedVersion, string changedBy, CancellationToken ct);
     Task<IReadOnlyList<RequestStatusHistoryDto>?> GetHistoryAsync(int id, CancellationToken ct);
+    Task<RequestSummaryDto> GetSummaryAsync(CancellationToken ct);
 }

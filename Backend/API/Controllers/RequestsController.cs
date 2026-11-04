@@ -51,5 +51,9 @@ namespace API.Controllers
         [HttpPost("bulk-status")]
         public async Task<ActionResult<BulkUpdateResult>> BulkUpdateStatus([FromBody] BulkUpdateStatusRequest body, CancellationToken ct)
             => Ok(await _service.BulkUpdateStatusAsync(body, ct));
+
+        [HttpGet("summary")]
+        public async Task<ActionResult<RequestSummaryDto>> GetSummary(CancellationToken ct)
+            => Ok(await _service.GetSummaryAsync(ct));
     }
 }

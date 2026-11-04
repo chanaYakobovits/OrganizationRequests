@@ -125,4 +125,31 @@ public class RequestRepository : IRequestRepository
                 h.Id, h.RequestId, h.PreviousStatus, h.NewStatus, h.ChangedAt, h.ChangedBy))
             .ToListAsync(ct);
     }
+
+    public async Task<RequestSummaryDto> GetSummaryAsync(CancellationToken ct)
+    {
+       
+        var statusCounts = await _db.Requests
+            .AsNoTracking()
+            .GroupBy(r => r.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
+        var priorityCounts = await _db.Requests
+            .AsNoTracking()
+            .GroupBy(r => r.Priority)
+            .Select(g => new { Priority = g.Key, Count = g.Count() })
+            .ToListAsync(ct);
+
+        
+        var byStatus = Enum.GetValues<RequestStatus>()
+            .Select(s => new StatusCountDto(s, statusCounts.FirstOrDefault(x => x.Status == s)?.Count ?? 0))
+            .ToList();
+
+        var byPriority = Enum.GetValues<RequestPriority>()
+            .Select(p => new PriorityCountDto(p, priorityCounts.FirstOrDefault(x => x.Priority == p)?.Count ?? 0))
+            .ToList();
+
+        return new RequestSummaryDto(byStatus.Sum(x => x.Count), byStatus, byPriority);
+    }
 }

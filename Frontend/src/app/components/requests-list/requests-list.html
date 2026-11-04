@@ -1,4 +1,12 @@
+
 <div dir="rtl">
+  @if (store.actionMessage(); as msg) {
+    <div class="msg" [class.error]="msg.type === 'error'" [class.success]="msg.type === 'success'">
+      {{ msg.text }}
+      <button (click)="store.dismissMessage()">✕</button>
+    </div>
+  }
+
   @if (store.error(); as err) {
     <div class="state error">
       <p>{{ err }}</p>
@@ -11,19 +19,23 @@
   } @else {
     <table [class.reloading]="store.loading()">
       <thead>
-       <tr>
-    <th>#</th>
-        <th class="sortable" (click)="store.setSort('Title')">כותרת {{ arrow('Title') }}</th>
-        <th class="sortable" (click)="store.setSort('OrganizationName')">ארגון {{ arrow('OrganizationName') }}</th>
-        <th class="sortable" (click)="store.setSort('Status')">סטטוס {{ arrow('Status') }}</th>
-        <th class="sortable" (click)="store.setSort('Priority')">עדיפות {{ arrow('Priority') }}</th>
-        <th>מטפל</th>
-        <th class="sortable" (click)="store.setSort('CreatedAt')">נוצר {{ arrow('CreatedAt') }}</th>
-</tr>
+        <tr>
+          <th>#</th>
+          <th class="sortable" (click)="store.setSort('Title')">כותרת {{ arrow('Title') }}</th>
+          <th class="sortable" (click)="store.setSort('OrganizationName')">ארגון {{ arrow('OrganizationName') }}</th>
+          <th class="sortable" (click)="store.setSort('Status')">סטטוס {{ arrow('Status') }}</th>
+          <th class="sortable" (click)="store.setSort('Priority')">עדיפות {{ arrow('Priority') }}</th>
+          <th>מטפל</th>
+          <th class="sortable" (click)="store.setSort('CreatedAt')">נוצר {{ arrow('CreatedAt') }}</th>
+          <th>פעולה</th>
+          <th>היסטוריה</th>
+        </tr>
       </thead>
+
       <tbody>
         @for (r of store.items(); track r.id) {
-          <tr>
+          <tr [class.selected]="history.selectedId() === r.id">
+            <!-- <tr> -->
             <td>{{ r.id }}</td>
             <td>{{ r.title }}</td>
             <td>{{ r.organizationName }}</td>
@@ -31,10 +43,36 @@
             <td>{{ r.priority }}</td>
             <td>{{ r.assignedTo ?? '—' }}</td>
             <td>{{ r.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+
+            <td>
+              @if (allowed(r).length > 0) {
+                <select
+                  #sel
+                  [disabled]="store.updatingId() === r.id"
+                  (change)="onChangeStatus(r, sel.value); sel.value = ''"
+                >
+                  <option value="">שינוי סטטוס...</option>
+                  @for (s of allowed(r); track s) {
+                    <option [value]="s">{{ statusLabels[s] }}</option>
+                  }
+                </select>
+              } 
+
+              @else {
+                —
+              }
+            </td>
+
+            <td>
+              <button (click)="history.open(r.id)">היסטוריה</button>
+            </td>
+
           </tr>
         }
       </tbody>
     </table>
-    <p>סה״כ: {{ store.totalCount() }}</p>
-  }
+
+    <!-- <p>סה״כ: {{ store.totalCount() }}</p> -->
+    <app-request-history />  
+}
 </div>

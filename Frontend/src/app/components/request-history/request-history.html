@@ -1,0 +1,49 @@
+@if (store.selectedId(); as id) {
+  <div class="modal-backdrop" dir="rtl" (click)="store.close()">
+    <section
+      class="modal-content"
+      role="dialog"
+      aria-modal="true"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="head">
+        <h4>היסטוריית שינויים - פנייה #{{ id }}</h4>
+
+        <button type="button" (click)="store.close()">✕</button>
+      </div>
+
+      @if (store.error(); as err) {
+        <div class="state error">
+          {{ err }}
+          <button (click)="store.refresh()">נסי שוב</button>
+        </div>
+      } @else if (store.loading() && store.items().length === 0) {
+        <div class="state">טוען היסטוריה...</div>
+      } @else if (store.items().length === 0) {
+        <div class="state">לא בוצעו שינויי סטטוס בפנייה זו.</div>
+      } @else {
+        <table [class.reloading]="store.loading()">
+          <thead>
+            <tr>
+              <th>מתאריך</th>
+              <th>מסטטוס</th>
+              <th>לסטטוס</th>
+              <th>בוצע ע"י</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (h of store.items(); track h.id) {
+              <tr>
+                <td>{{ h.changedAt | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                <td>{{ statusLabels[h.previousStatus] }}</td>
+                <td>{{ statusLabels[h.newStatus] }}</td>
+                <td>{{ h.changedBy }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+  </div>
+}

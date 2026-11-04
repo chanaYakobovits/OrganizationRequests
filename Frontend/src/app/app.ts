@@ -4,9 +4,11 @@ import { RequestsStore } from './services/requests.store';
 import { RequestsList } from './components/requests-list/requests-list';
 import { RequestsFilters } from './components/requests-filters/requests-filters';
 import { Pager } from './components/pager/pager';
+import { RequestsSummary } from './components/requests-summary/requests-summary';
+import { RequestHistory } from './components/request-history/request-history';
 
 @Component({
-  imports: [RouterOutlet,RequestsList,RequestsFilters,Pager],
+  imports: [RouterOutlet,RequestsList,RequestsFilters,Pager,RequestsSummary,RequestHistory],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

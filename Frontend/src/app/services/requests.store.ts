@@ -1,14 +1,13 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Subject, catchError, debounceTime, distinctUntilChanged, filter, map, of, switchMap, tap } from 'rxjs';
-import { getErrorMessage } from '../core/http-error';
-import {
-  PagedResult,
-  RequestDto,
-  RequestQuery,
-  RequestSortField,
-} from '../models/request.models';
+import { getErrorMessage, getErrorStatus } from '../core/http-error';
+import {PagedResult,RequestDto,RequestQuery,RequestSortField,} from '../models/request.models';
 import { RequestsApiService } from './requests-api.service';
+import { finalize } from 'rxjs';
+import { RequestStatus } from '../models/request.models';
+import { SummaryStore } from './summary.store';
+import { HistoryStore } from './history.store';
 
 type FilterFields = Partial<
   Pick<
@@ -28,15 +27,19 @@ const DEFAULT_QUERY: RequestQuery = {
   sortDir: 'Desc',
 };
 
+const CURRENT_USER = 'מטפל 01';
+
 @Injectable({ providedIn: 'root' })
 export class RequestsStore {
-  private readonly api = inject(RequestsApiService);
 
-  // ===== קלט: מה המשתמשת ביקשה =====
+  private readonly history = inject(HistoryStore);
+  private readonly api = inject(RequestsApiService);
+  private readonly summary = inject(SummaryStore);
+ 
   private readonly _query = signal<RequestQuery>({ ...DEFAULT_QUERY });
   readonly query = this._query.asReadonly();
 
-  // ===== פלט: מה השרת החזיר =====
+  
   readonly items = signal<RequestDto[]>([]);
   readonly totalCount = signal(0);
   readonly totalPages = signal(0);
@@ -48,8 +51,11 @@ export class RequestsStore {
 
   private readonly searchInput$ = new Subject<string>();
 
+  readonly updatingId = signal<number | null>(null);
+  readonly actionMessage = signal<{ type: 'success' | 'error'; text: string } | null>(null);
+
   constructor() {
-    // Debounce לחיפוש טקסט
+    
     this.searchInput$
       .pipe(
         debounceTime(300),
@@ -60,7 +66,7 @@ export class RequestsStore {
       )
       .subscribe((search) => this.patchQuery({ search: search || undefined, page: 1 }));
 
-    // כל שינוי ב-query = טעינה; switchMap מבטל בקשה קודמת
+    
     toObservable(this._query)
       .pipe(
         tap(() => {
@@ -90,7 +96,40 @@ export class RequestsStore {
       });
   }
 
-  // ===== פעולות =====
+updateStatus(item: RequestDto, newStatus: RequestStatus): void {
+  if (this.updatingId() !== null) return;
+
+  this.updatingId.set(item.id);
+  this.actionMessage.set(null);
+
+  this.api
+    .updateStatus(item.id, { newStatus, version: item.version, changedBy: CURRENT_USER })
+    .pipe(finalize(() => this.updatingId.set(null)))
+    .subscribe({
+      next: (updated) => {
+        this.items.update((list) => list.map((r) => (r.id === updated.id ? updated : r)));
+        this.summary.load();
+        if (this.history.selectedId() === updated.id) this.history.refresh();
+        this.actionMessage.set({ type: 'success', text: `פנייה #${updated.id} עודכנה.` });
+      },
+      error: (err) => {
+        const status = getErrorStatus(err);
+        if (status === 409 || status === 404) this.reload();
+
+        this.actionMessage.set({
+          type: 'error',
+          text:
+            status === 409
+              ? 'הפנייה עודכנה בינתיים על ידי משתמש אחר. הרשימה נטענה מחדש, נסי שוב.'
+              : getErrorMessage(err),
+        });
+      },
+    });
+}
+
+dismissMessage(): void {
+  this.actionMessage.set(null);
+}
   setSearch(text: string): void {
     this.searchInput$.next(text);
   }

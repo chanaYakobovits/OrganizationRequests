@@ -4,3 +4,8 @@ th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: right; }
 .state { padding: 24px; text-align: center; }
 .error { color: #b00020; }
 .sortable { cursor: pointer; user-select: none; }
+
+.msg { padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+.msg.success { background: #e6f4ea; color: #1e6b34; }
+.msg.error { background: #fdecea; color: #b00020; }
+tr.selected { background: #eef2ff; }

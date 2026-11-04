@@ -1,0 +1,37 @@
+<div class="summary" dir="rtl">
+  @if (store.error(); as err) {
+    <div class="state error">
+      {{ err }}
+      <button (click)="store.load()">נסי שוב</button>
+    </div>
+  } @else if (store.data(); as s) {
+    <div class="card total">
+      <div class="num">{{ s.total }}</div>
+      <div>סה״כ פניות</div>
+    </div>
+
+    <div class="card">
+      <h4>לפי סטטוס</h4>
+      @for (x of s.byStatus; track x.status) {
+        <div class="row">
+          <span class="label">{{ statusLabels[x.status] }}</span>
+          <div class="bar"><div class="fill" [style.width.%]="percent(x.count, s.total)"></div></div>
+          <span class="count">{{ x.count }} ({{ percent(x.count, s.total) }}%)</span>
+        </div>
+      }
+    </div>
+
+    <div class="card">
+      <h4>לפי עדיפות</h4>
+      @for (x of s.byPriority; track x.priority) {
+        <div class="row">
+          <span class="label">{{ priorityLabels[x.priority] }}</span>
+          <div class="bar"><div class="fill" [style.width.%]="percent(x.count, s.total)"></div></div>
+          <span class="count">{{ x.count }} ({{ percent(x.count, s.total) }}%)</span>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="state">טוען סיכום...</div>
+  }
+</div>

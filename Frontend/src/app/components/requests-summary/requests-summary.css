@@ -1,0 +1,12 @@
+.summary { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+.card { border: 1px solid #ddd; border-radius: 8px; padding: 12px; min-width: 260px; }
+.card h4 { margin: 0 0 8px; }
+.total { text-align: center; min-width: 120px; }
+.num { font-size: 32px; font-weight: bold; }
+.row { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.label { width: 60px; }
+.bar { flex: 1; height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+.fill { height: 100%; background: #3f51b5; }
+.count { width: 80px; font-size: 13px; }
+.state { padding: 12px; }
+.error { color: #b00020; }

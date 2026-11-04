@@ -1,0 +1,25 @@
+<div class="bar" dir="rtl">
+  <input
+    #q
+    type="search"
+    placeholder="חיפוש בכותרת או בארגון..."
+    [value]="store.query().search ?? ''"
+    (input)="store.setSearch(q.value)"
+  />
+
+  <select #st (change)="onStatus(st.value)">
+    <option value="" [selected]="!store.query().status">כל הסטטוסים</option>
+    @for (s of statuses; track s) {
+      <option [value]="s" [selected]="store.query().status === s">{{ s }}</option>
+    }
+  </select>
+
+  <select #pr (change)="onPriority(pr.value)">
+    <option value="" [selected]="!store.query().priority">כל העדיפויות</option>
+    @for (p of priorities; track p) {
+      <option [value]="p" [selected]="store.query().priority === p">{{ p }}</option>
+    }
+  </select>
+
+  <button (click)="store.clearFilters()">נקה</button>
+</div>

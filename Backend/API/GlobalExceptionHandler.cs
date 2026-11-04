@@ -7,6 +7,12 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext ctx, Exception ex, CancellationToken ct)
     {
+        if (ex is OperationCanceledException && ctx.RequestAborted.IsCancellationRequested)
+        {
+            logger.LogDebug("Request cancelled by client: {Path}", ctx.Request.Path);
+            ctx.Response.StatusCode = 499; 
+            return true;
+        }
         if (ex is OperationCanceledException) return true;
 
         var (status, title) = ex is ArgumentException

@@ -1,0 +1,6 @@
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 8px; border-bottom: 1px solid #ddd; text-align: right; }
+.reloading { opacity: 0.5; }
+.state { padding: 24px; text-align: center; }
+.error { color: #b00020; }
+.sortable { cursor: pointer; user-select: none; }

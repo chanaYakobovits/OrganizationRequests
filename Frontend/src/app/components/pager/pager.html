@@ -1,0 +1,19 @@
+@if (store.totalPages() > 0) {
+  <div class="pager" dir="rtl">
+    <button
+      [disabled]="store.query().page <= 1 || store.loading()"
+      (click)="store.setPage(store.query().page - 1)">הקודם</button>
+
+    <span>עמוד {{ store.query().page }} מתוך {{ store.totalPages() }}</span>
+
+    <button
+      [disabled]="store.query().page >= store.totalPages() || store.loading()"
+      (click)="store.setPage(store.query().page + 1)">הבא</button>
+
+    <select #ps (change)="onSize(ps.value)">
+      @for (s of sizes; track s) {
+        <option [value]="s" [selected]="store.query().pageSize === s">{{ s }} בעמוד</option>
+      }
+    </select>
+  </div>
+}

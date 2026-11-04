@@ -1,0 +1,40 @@
+<div dir="rtl">
+  @if (store.error(); as err) {
+    <div class="state error">
+      <p>{{ err }}</p>
+      <button (click)="store.reload()">נסי שוב</button>
+    </div>
+  } @else if (store.loading() && store.items().length === 0) {
+    <div class="state">טוען פניות...</div>
+  } @else if (store.isEmpty()) {
+    <div class="state">לא נמצאו פניות התואמות את החיפוש.</div>
+  } @else {
+    <table [class.reloading]="store.loading()">
+      <thead>
+       <tr>
+    <th>#</th>
+        <th class="sortable" (click)="store.setSort('Title')">כותרת {{ arrow('Title') }}</th>
+        <th class="sortable" (click)="store.setSort('OrganizationName')">ארגון {{ arrow('OrganizationName') }}</th>
+        <th class="sortable" (click)="store.setSort('Status')">סטטוס {{ arrow('Status') }}</th>
+        <th class="sortable" (click)="store.setSort('Priority')">עדיפות {{ arrow('Priority') }}</th>
+        <th>מטפל</th>
+        <th class="sortable" (click)="store.setSort('CreatedAt')">נוצר {{ arrow('CreatedAt') }}</th>
+</tr>
+      </thead>
+      <tbody>
+        @for (r of store.items(); track r.id) {
+          <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.title }}</td>
+            <td>{{ r.organizationName }}</td>
+            <td>{{ r.status }}</td>
+            <td>{{ r.priority }}</td>
+            <td>{{ r.assignedTo ?? '—' }}</td>
+            <td>{{ r.createdAt | date: 'dd/MM/yyyy HH:mm' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    <p>סה״כ: {{ store.totalCount() }}</p>
+  }
+</div>

@@ -1,0 +1,2 @@
+.bar { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+input { min-width: 260px; }

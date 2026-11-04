@@ -1,6 +1,6 @@
 import { DestroyRef, Injectable, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { Subject, catchError, debounceTime, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs';
+import { Subject, catchError, debounceTime, distinctUntilChanged, filter, map, of, switchMap, tap } from 'rxjs';
 import { getErrorMessage } from '../core/http-error';
 import {
   PagedResult,
@@ -54,7 +54,8 @@ export class RequestsStore {
       .pipe(
         debounceTime(300),
         map((text) => text.trim()),
-        distinctUntilChanged(),
+        // distinctUntilChanged(),
+        filter((s) => s !== (this._query().search ?? '')),
         takeUntilDestroyed(),
       )
       .subscribe((search) => this.patchQuery({ search: search || undefined, page: 1 }));

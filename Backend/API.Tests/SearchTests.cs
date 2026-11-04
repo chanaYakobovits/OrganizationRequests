@@ -7,7 +7,11 @@ using Common.Models;
 
 namespace API.Tests;
 
-public class SearchTests : IClassFixture<ApiFactory>
+
+
+[Collection("Api")]
+public class SearchTests
+
 {
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     {
@@ -16,6 +20,7 @@ public class SearchTests : IClassFixture<ApiFactory>
 
     private readonly HttpClient _client;
     public SearchTests(ApiFactory factory) => _client = factory.CreateClient();
+    
 
     private async Task<PagedResult<RequestDto>> GetAsync(string queryString)
     {

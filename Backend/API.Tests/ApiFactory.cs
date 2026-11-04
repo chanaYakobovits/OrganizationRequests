@@ -17,7 +17,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        // הגנה: לא מוחקים מסד שהשם שלו לא נראה כמו מסד בדיקות
+        
         var dbName = db.Database.GetDbConnection().Database;
         if (!dbName.Contains("Test", StringComparison.OrdinalIgnoreCase))
             throw new InvalidOperationException($"Refusing to reset non-test database '{dbName}'.");
@@ -41,7 +41,9 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             R("Alpha request 2", "Gamma Services", RequestStatus.InProgress, 2),
             R("Gamma complaint", "Alpha Construction", RequestStatus.New, 3),
             R("Delta update", "Delta Education", RequestStatus.Completed, 4),
-            R("100% done", "Omega", RequestStatus.Waiting, 5));
+            R("100% done", "Omega", RequestStatus.Waiting, 5),
+            R("Update target", "Zeta Services", RequestStatus.New, 6),
+            R("Concurrency target", "Eta Services", RequestStatus.New, 7));
         await db.SaveChangesAsync();
     }
 

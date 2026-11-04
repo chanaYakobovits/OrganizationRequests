@@ -100,10 +100,12 @@ public class RequestRepository : IRequestRepository
             await _db.SaveChangesAsync(ct);
         }
         catch (DbUpdateConcurrencyException)
-        {
-        
+        {   
+            _db.ChangeTracker.Clear();
+
             return new(UpdateOutcome.Conflict,
                 Error: "The request was modified by someone else. Reload and try again.");
+          
         }
 
         

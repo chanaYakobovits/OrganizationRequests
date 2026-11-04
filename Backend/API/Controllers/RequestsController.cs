@@ -47,5 +47,9 @@ namespace API.Controllers
                           statusCode: StatusCodes.Status404NotFound)
                 : Ok(history);
         }
+
+        [HttpPost("bulk-status")]
+        public async Task<ActionResult<BulkUpdateResult>> BulkUpdateStatus([FromBody] BulkUpdateStatusRequest body, CancellationToken ct)
+            => Ok(await _service.BulkUpdateStatusAsync(body, ct));
     }
 }

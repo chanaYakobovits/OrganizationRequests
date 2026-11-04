@@ -32,5 +32,27 @@ namespace Services.Services
         }
         public Task<IReadOnlyList<RequestStatusHistoryDto>?> GetHistoryAsync(int id, CancellationToken ct)
             => _repo.GetHistoryAsync(id, ct);
+        public async Task<BulkUpdateResult> BulkUpdateStatusAsync(
+    BulkUpdateStatusRequest request, CancellationToken ct)
+        {
+            var results = new List<BulkItemResult>(request.Items.Count);
+
+            foreach (var item in request.Items)
+            {
+                ct.ThrowIfCancellationRequested();
+
+                if (!item.TryGetRowVersion(out var rowVersion))
+                    throw new ArgumentException($"Invalid version for item {item.Id}.", nameof(request));
+
+                var r = await _repo.UpdateStatusAsync(
+                    item.Id, request.NewStatus, rowVersion, request.ChangedBy, ct);
+
+                results.Add(new BulkItemResult(item.Id, r.Outcome, r.Request, r.Error));
+            }
+
+            var succeeded = results.Count(x => x.Outcome == UpdateOutcome.Success);
+            return new BulkUpdateResult(results.Count, succeeded, results.Count - succeeded, results);
+        }
+
     }
 }

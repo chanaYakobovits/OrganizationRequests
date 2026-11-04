@@ -15,19 +15,8 @@ public class UpdateStatusRequest : IValidatableObject
     public string ChangedBy { get; set; } = null!;
 
     public bool TryGetRowVersion(out byte[] rowVersion)
-    {
-        rowVersion = [];
-        if (string.IsNullOrWhiteSpace(Version)) return false;
-        try
-        {
-            rowVersion = Convert.FromBase64String(Version);
-            return rowVersion.Length == 8; 
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-    }
+    => RowVersionParser.TryParse(Version, out rowVersion);
+
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

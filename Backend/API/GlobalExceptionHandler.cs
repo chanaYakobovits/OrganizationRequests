@@ -13,7 +13,7 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
             ctx.Response.StatusCode = 499; 
             return true;
         }
-        if (ex is OperationCanceledException) return true;
+        
 
         var (status, title) = ex is ArgumentException
             ? (StatusCodes.Status400BadRequest, "Invalid request")

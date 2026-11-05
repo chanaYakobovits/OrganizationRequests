@@ -35,7 +35,6 @@
       <tbody>
         @for (r of store.items(); track r.id) {
           <tr [class.selected]="history.selectedId() === r.id">
-            <!-- <tr> -->
             <td>{{ r.id }}</td>
             <td>{{ r.title }}</td>
             <td>{{ r.organizationName }}</td>
@@ -72,7 +71,5 @@
       </tbody>
     </table>
 
-    <!-- <p>סה״כ: {{ store.totalCount() }}</p> -->
- 
 }
 </div>

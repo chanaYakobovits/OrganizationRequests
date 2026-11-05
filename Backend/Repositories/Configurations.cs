@@ -19,11 +19,13 @@ namespace Repositories
             b.Property(x => x.RowVersion).IsRowVersion();
             b.HasIndex(x => new { x.CreatedAt, x.Id })
              .IsDescending(true, false)
+             .IncludeProperties(x => new { x.Title, x.OrganizationName })
              .HasDatabaseName("IX_Requests_CreatedAt_Id");
             b.HasIndex(x => new { x.Status, x.CreatedAt }).IsDescending(false, true);
             b.HasIndex(x => new { x.AssignedTo, x.CreatedAt }).IsDescending(false, true);
             b.HasIndex(x => x.Title);
             b.HasIndex(x => x.OrganizationName);
+            b.HasIndex(x => x.Priority);
         }
     }
 

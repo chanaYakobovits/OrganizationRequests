@@ -66,6 +66,8 @@ namespace Repositories.Migrations
 
                     b.HasIndex("OrganizationName");
 
+                    b.HasIndex("Priority");
+
                     b.HasIndex("Title");
 
                     b.HasIndex("AssignedTo", "CreatedAt")
@@ -74,6 +76,8 @@ namespace Repositories.Migrations
                     b.HasIndex("CreatedAt", "Id")
                         .IsDescending(true, false)
                         .HasDatabaseName("IX_Requests_CreatedAt_Id");
+
+                    SqlServerIndexBuilderExtensions.IncludeProperties(b.HasIndex("CreatedAt", "Id"), new[] { "Title", "OrganizationName" });
 
                     b.HasIndex("Status", "CreatedAt")
                         .IsDescending(false, true);

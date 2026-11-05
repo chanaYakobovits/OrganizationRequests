@@ -6,8 +6,9 @@ namespace Common.DTOs;
 public class RequestQuery : IValidatableObject
 {
     public const int MaxPageSize = 100;
+    public const int MaxPage = 1_000_000;
 
-    [Range(1, int.MaxValue)]
+    [Range(1, MaxPage)]
     public int Page { get; set; } = 1;
 
     [Range(1, MaxPageSize)]

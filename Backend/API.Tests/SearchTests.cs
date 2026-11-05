@@ -93,4 +93,11 @@ public class SearchTests
         Assert.Equal(1, result.TotalCount);
         Assert.All(result.Items, r => Assert.StartsWith("Beta", r.OrganizationName));
     }
+    [Fact]
+    public async Task Paging_PageAboveMax_Returns400()
+    {
+        var response = await _client.GetAsync("/api/requests?page=2000000");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
 }
